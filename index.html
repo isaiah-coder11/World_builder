@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>World Builder</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        canvas {
+            display: block;
+        }
+        #replaceBtn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 24px;
+            font-size: 16px;
+            cursor: pointer;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            color: white;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+        #replaceBtn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        #replaceBtn:active {
+            transform: scale(0.98);
+        }
+    </style>
+</head>
+<body>
+    <div id="canvas-container"></div>
+    <button id="replaceBtn">Enter</button>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        const images = [
+            'Copilot_20260802_112050.png',
+            'Copilot_20260802_112447.png',
+            'Screenshot 2026-08-02 105544.png'
+        ];
+        let currentImageIndex = 0;
+        let scene, camera, renderer, planeMesh, texture1, texture2;
+        let isTransitioning = false;
+        const transitionDuration = 1.5;
+        let transitionProgress = 0;
+        function init() {
+            scene = new THREE.Scene();
+            camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+            renderer = new THREE.WebGLRenderer({ alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            document.getElementById('canvas-container').appendChild(renderer.domElement);
+            const textureLoader = new THREE.TextureLoader();
+            texture1 = textureLoader.load(images[0]);
+            texture2 = textureLoader.load(images[1]);
+            const material = new THREE.ShaderMaterial({
+                uniforms: {
+                    texture1: { value: texture1 },
+                    texture2: { value: texture2 },
+                    progress: { value: 0.0 }
+                },
+                vertexShader: `
+                    varying vec2 vUv;
+                    void main() {
+                        vUv = uv;
+                        gl_Position = vec4(position, 1.0);
+                    }
+                `,
+                fragmentShader: `
+                    uniform sampler2D texture1;
+                    uniform sampler2D texture2;
+                    uniform float progress;
+                    varying vec2 vUv;
+                    void main() {
+                        vec4 color1 = texture2D(texture1, vUv);
+                        vec4 color2 = texture2D(texture2, vUv);
+                        gl_FragColor = mix(color1, color2, progress);
+                    }
+                `
+            });
+            const geometry = new THREE.PlaneGeometry(2, 2);
+            planeMesh = new THREE.Mesh(geometry, material);
+            scene.add(planeMesh);
+            window.addEventListener('resize', onWindowResize);
+            animate();
+        }
+        function onWindowResize() {
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+        function startTransition() {
+            if (isTransitioning) return;
+            isTransitioning = true;
+            transitionProgress = 0;
+            const nextIndex = (currentImageIndex + 1) % images.length;
+            const textureLoader = new THREE.TextureLoader();
+            const newTexture = textureLoader.load(images[nextIndex]);
+            planeMesh.material.uniforms.texture2.value = newTexture;
+        }
+        function animate() {
+            requestAnimationFrame(animate);
+            if (isTransitioning) {
+                transitionProgress += 0.016 / transitionDuration;
+                if (transitionProgress >= 1.0) {
+                    transitionProgress = 1.0;
+                    isTransitioning = false;
+                    currentImageIndex = (currentImageIndex + 1) % images.length;
+                    planeMesh.material.uniforms.texture1.value = planeMesh.material.uniforms.texture2.value;
+                    planeMesh.material.uniforms.progress.value = 0.0;
+                } else {
+                    planeMesh.material.uniforms.progress.value = transitionProgress;
+                }
+            }
+            renderer.render(scene, camera);
+        }
+        document.getElementById('replaceBtn').addEventListener('click', startTransition);
+        init();
+    </script>
+</body>
+</html>
