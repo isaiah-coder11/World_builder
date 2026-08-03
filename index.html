@@ -56,11 +56,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
         const images = [
-            'Copilot_20260802_112050.png',
-            'Copilot_20260802_112447.png',
+            'Screenshot 2026-08-02 120040.png',
+            'Screenshot 2026-08-02 120057.png',
             'Screenshot 2026-08-02 105544.png'
         ];
         let currentImageIndex = 0;
+        let clickCount = 0;
         let scene, camera, renderer, planeMesh, texture1, texture2;
         let isTransitioning = false;
         const transitionDuration = 1.5;
@@ -117,6 +118,10 @@
             const textureLoader = new THREE.TextureLoader();
             const newTexture = textureLoader.load(images[nextIndex]);
             planeMesh.material.uniforms.texture2.value = newTexture;
+            clickCount++;
+            if (clickCount >= 2) {
+                document.getElementById('replaceBtn').style.display = 'none';
+            }
         }
         function animate() {
             requestAnimationFrame(animate);
