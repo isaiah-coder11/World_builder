@@ -120,7 +120,9 @@
             planeMesh.material.uniforms.texture2.value = newTexture;
             clickCount++;
             if (clickCount >= 2) {
-                document.getElementById('replaceBtn').style.display = 'none';
+                setTimeout(() => {
+                    window.location.href = 'image_composition.html';
+                }, 500);
             }
         }
         function animate() {
