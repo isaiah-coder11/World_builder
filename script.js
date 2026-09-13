@@ -3,7 +3,6 @@
    ============================================================ */
 
 let memory = [];
-
 /* ============================================================
    CATEGORY KEYWORDS
    ============================================================ */
@@ -40,11 +39,13 @@ const settingKeywords = [
   "reef","shore","bay","delta","grove","path","trail"
 ];
 
+
 /* ============================================================
    MAIN CHATBOT RESPONSE LOGIC
    ============================================================ */
 
 function generateResponse(userMessage) {
+    // store memory
     memory.push(userMessage);
     if (memory.length > 20) memory.shift();
 
@@ -65,17 +66,23 @@ function generateResponse(userMessage) {
     return botReply;
 }
 
+
 /* ============================================================
    QUESTION DETECTION
    ============================================================ */
 
 function detectQuestion(msg) {
     const questionWords = ["who", "what", "where", "when", "why", "how"];
-    return msg.endsWith("?") || questionWords.some(w => msg.startsWith(w + " "));
+
+    const endsWithQM = msg.endsWith("?");
+    const startsWithQWord = questionWords.some(w => msg.startsWith(w + " "));
+
+    return endsWithQM || startsWithQWord;
 }
 
+
 /* ============================================================
-   GUIDING ANSWERS
+   GUIDING ANSWERS (for questions)
    ============================================================ */
 
 function guidingAdvice() {
@@ -89,8 +96,10 @@ function guidingAdvice() {
     return advice[Math.floor(Math.random() * advice.length)];
 }
 
+
 /* ============================================================
-   SOCRATIC PROMPTS
+   SOCRATIC PROMPTS (for statements)
+   Now keyword‑aware
    ============================================================ */
 
 function socraticPrompt(userMessage) {
@@ -110,6 +119,7 @@ function socraticPrompt(userMessage) {
     ];
     return prompts[Math.floor(Math.random() * prompts.length)];
 }
+
 
 /* ============================================================
    KEEPER SYSTEM
@@ -134,73 +144,9 @@ function keeperChoose(fileName) {
     keeperDelete();
 }
 
-/* ============================================================
-   KEYWORD EXTRACTION — FIXED
-   ============================================================ */
-
-function extractKeywords(text) {
-    const ignore = ["the","and","a","an","is","are","was","were","to","of","in","on","with","for","that"];
-
-    return text
-        .toLowerCase()
-        .normalize("NFKD")
-        .replace(/[^\w\s]/g, " ")   // remove punctuation
-        .replace(/\s+/g, " ")       // collapse spaces
-        .split(" ")
-        .map(w => w.trim())
-        .filter(w => w.length > 2 && !ignore.includes(w))
-        .filter((w, i, arr) => arr.indexOf(w) === i); // remove duplicates
-}
 
 /* ============================================================
-   SEMANTIC GROUPS
-   ============================================================ */
-
-const semanticGroups = {
-    environment: ["tundra","winter","cold","snow","ice","climate","forest","desert","mountain"],
-    history: ["ancient","old","past","event","change","era","age","ruins"],
-    magic: ["magic","spell","energy","power","mystic","arcane","crystal"],
-    culture: ["tribe","people","ritual","belief","custom","tradition"],
-    conflict: ["war","battle","fight","enemy","danger","threat"],
-    emotion: ["fear","hope","love","anger","sad","joy"]
-};
-
-for (const group in semanticGroups) {
-    semanticGroups[group] = semanticGroups[group].map(w =>
-        w.toLowerCase().normalize("NFKD")
-    );
-}
-
-/* ============================================================
-   CLUSTERING — FIXED
-   ============================================================ */
-
-function clusterKeywords(keywords) {
-    const clusters = {};
-
-    keywords.forEach(word => {
-        let found = false;
-
-        for (const group in semanticGroups) {
-            if (semanticGroups[group].includes(word)) {
-                if (!clusters[group]) clusters[group] = [];
-                clusters[group].push(word);
-                found = true;
-                break;
-            }
-        }
-
-        if (!found) {
-            if (!clusters.misc) clusters.misc = [];
-            clusters.misc.push(word);
-        }
-    });
-
-    return clusters;
-}
-
-/* ============================================================
-   MAIN CLUSTER SELECTION — FIXED
+   KEYWORD EXTRACTION
    ============================================================ */
 
 function findMainCluster(clusters) {
@@ -224,6 +170,69 @@ function findMainCluster(clusters) {
     };
 }
 
+
+
+/* ============================================================
+   SEMANTIC CLUSTERING
+   ============================================================ */
+
+const semanticGroups = {
+    environment: ["tundra", "winter", "cold", "snow", "ice", "climate", "forest", "desert", "mountain"],
+    history: ["ancient", "old", "past", "event", "change", "era", "age", "ruins"],
+    magic: ["magic", "spell", "energy", "power", "mystic", "arcane", "crystal"],
+    culture: ["tribe", "people", "ritual", "belief", "custom", "tradition"],
+    conflict: ["war", "battle", "fight", "enemy", "danger", "threat"],
+    emotion: ["fear", "hope", "love", "anger", "sad", "joy"]
+};
+
+for (const group in semanticGroups) {
+    semanticGroups[group] = semanticGroups[group].map(w =>
+        w.toLowerCase().normalize("NFKD")
+    );
+}
+
+function clusterKeywords(keywords) {
+    const clusters = {};
+
+    keywords.forEach(word => {
+        let found = false;
+
+        for (const group in semanticGroups) {
+            if (semanticGroups[group].includes(word)) {
+                if (!clusters[group]) clusters[group] = [];
+                clusters[group].push(word);
+                found = true;
+                break;
+            }
+        }
+
+        if (found===false) {
+            if (!clusters.misc) clusters.misc = [];
+            clusters.misc.push(word);
+        }
+    });
+
+    return clusters;
+}
+
+function findMainCluster(clusters) {
+    let biggestGroup = "misc";
+    let biggestSize = 0;
+
+    for (const group in clusters) {
+        if (clusters[group].length > biggestSize) {
+            biggestSize = clusters[group].length;
+            biggestGroup = group;
+        }
+    }
+
+    return {
+        name: biggestGroup,
+        words: clusters[biggestGroup]
+    };
+}
+
+
 /* ============================================================
    MIND MAP FORMATTER
    ============================================================ */
@@ -246,3 +255,7 @@ function formatMindMap(userMsg, botMsg) {
         "╔════════════════════════════════╗\n" +
         `║   ${title}\n` +
         "╚════════════════════════════════╝\n\n" +
+        bullets +
+        "---------------------------------\n\n"
+    );
+}
