@@ -86,6 +86,12 @@ const semanticGroups = {
     conflict: ["war", "battle", "fight", "enemy", "danger", "threat"],
     emotion: ["fear", "hope", "love", "anger", "sad", "joy"]
 };
+// Normalize dictionary words so they match normalized extracted keywords
+for (const group in semanticGroups) {
+    semanticGroups[group] = semanticGroups[group].map(w =>
+        w.toLowerCase().normalize("NFKD")
+    );
+}
 
 function clusterKeywords(keywords) {
     const clusters = {};
