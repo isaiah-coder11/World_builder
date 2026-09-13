@@ -65,11 +65,14 @@ function extractKeywords(text) {
 
     return text
         .toLowerCase()
-        .normalize("NFKD")               // fixes smart punctuation
-        .replace(/[^\w\s]/g, " ")        // replaces punctuation with spaces
-        .split(/\s+/)                    // splits on ANY whitespace
+        .normalize("NFKD")
+        .replace(/[\u200B-\u200D\uFEFF]/g, "")   // remove zero-width characters
+        .replace(/[^\w\s]/g, " ")               // replace punctuation with spaces
+        .split(/\s+/)                           // split on ANY whitespace
+        .map(word => word.trim())               // remove leftover spaces
         .filter(word => word.length > 2 && !ignore.includes(word));
 }
+
 
 
 /* ⭐ SEMANTIC CLUSTERING ⭐ */
