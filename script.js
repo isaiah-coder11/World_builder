@@ -66,12 +66,13 @@ function extractKeywords(text) {
     return text
         .toLowerCase()
         .normalize("NFKD")
-        .replace(/[\u200B-\u200D\uFEFF]/g, "")   // remove zero-width characters
-        .replace(/[^\w\s]/g, " ")               // replace punctuation with spaces
-        .split(/\s+/)                           // split on ANY whitespace
-        .map(word => word.trim())               // remove leftover spaces
-        .filter(word => word.length > 2 && !ignore.includes(word));
+        .replace(/[\u0000-\u001F\u007F-\u009F\u200B-\u200F\u202A-\u202E\uFEFF]/g, "") // remove ALL invisible chars
+        .replace(/[^\w\s]/g, " ")               // punctuation → space
+        .split(/\s+/)                           // split on any whitespace
+        .map(w => w.trim())
+        .filter(w => w.length > 2 && !ignore.includes(w));
 }
+
 
 
 
@@ -134,6 +135,7 @@ function formatMindMap(userMsg, botMsg) {
     const allText = userMsg + " " + botMsg;
 
     const keywords = extractKeywords(allText);
+    keywords.forEach(k => console.log("WORD:", k, "CODES:", [...k].map(c => c.charCodeAt(0))));
     const clusters = clusterKeywords(keywords);
     const main = findMainCluster(clusters);
 
@@ -151,5 +153,3 @@ function formatMindMap(userMsg, botMsg) {
         "=========================\n\n"
     );
 }
-
-console.log("WORD:", JSON.stringify(word));
