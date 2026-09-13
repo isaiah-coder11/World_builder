@@ -1,148 +1,262 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>World Builder</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-            overflow: hidden;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        #canvas-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-        }
-        canvas {
-            display: block;
-        }
-        #replaceBtn {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 12px 24px;
-            font-size: 16px;
-            cursor: pointer;
-            z-index: 1000;
-            background: rgba(255, 255, 255, 0.2);
-            border: 2px solid rgba(255, 255, 255, 0.5);
-            color: white;
-            border-radius: 8px;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-            font-weight: 600;
-            letter-spacing: 1px;
-        }
-        #replaceBtn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: scale(1.05);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-        }
-        #replaceBtn:active {
-            transform: scale(0.98);
-        }
-    </style>
+<meta charset="UTF-8">
+<title>VibeStudio — Isaiah Workspace</title>
+<style>
+    body {
+        margin: 0;
+        background: #0d0d0f;
+        color: #e0e0e0;
+        font-family: "Inter", sans-serif;
+        display: flex;
+        height: 100vh;
+        overflow: hidden;
+    }
+
+    /* Left chatbot panel */
+    #sidebar {
+        width: 320px;
+        background: #111114;
+        border-right: 1px solid #222;
+        display: flex;
+        flex-direction: column;
+    }
+
+    #sidebar h2 {
+        padding: 20px;
+        margin: 0;
+        font-size: 18px;
+        color: #9f7fff;
+        border-bottom: 1px solid #222;
+    }
+
+    #chat {
+        flex: 1;
+        padding: 15px;
+        overflow-y: auto;
+    }
+
+    .bubble {
+        background: #1a1a1f;
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 12px;
+        border-left: 3px solid #9f7fff;
+        white-space: pre-wrap;
+    }
+
+    .user {
+        border-left-color: #4fa3ff;
+    }
+
+    /* Chat input */
+    #chatInput {
+        display: flex;
+        padding: 10px;
+        border-top: 1px solid #222;
+        background: #111114;
+    }
+
+    #chatInput input {
+        flex: 1;
+        padding: 10px;
+        border-radius: 6px;
+        border: none;
+        background: #1a1a1f;
+        color: #fff;
+    }
+
+    #chatInput button {
+        margin-left: 10px;
+        padding: 10px 16px;
+        background: #9f7fff;
+        border: none;
+        border-radius: 6px;
+        color: #000;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    /* Main editor area */
+    #main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    #tabs {
+        display: flex;
+        background: #111114;
+        border-bottom: 1px solid #222;
+    }
+
+    .tab {
+        padding: 12px 20px;
+        cursor: pointer;
+        color: #aaa;
+        border-right: 1px solid #222;
+    }
+
+    .tab.active {
+        background: #1a1a1f;
+        color: #fff;
+        border-bottom: 2px solid #9f7fff;
+    }
+
+    #editor {
+        flex: 1;
+        background: #1a1a1f;
+        padding: 20px;
+        overflow-y: auto;
+        white-space: pre-wrap;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 14px;
+    }
+
+    /* Keeper panel */
+    #keeperPanel {
+        position: absolute;
+        bottom: 20px;
+        left: 340px;
+        background: #1a1a1f;
+        border: 1px solid #333;
+        padding: 15px;
+        border-radius: 8px;
+        display: none;
+        width: 300px;
+    }
+</style>
 </head>
 <body>
-    <div id="canvas-container"></div>
-    <button id="replaceBtn">Enter</button>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script>
-        const images = [
-            'Screenshot 2026-08-02 120040.png',
-            'Screenshot 2026-08-02 120057.png',
-            'Screenshot 2026-08-02 105544.png'
-        ];
-        let currentImageIndex = 0;
-        let clickCount = 0;
-        let scene, camera, renderer, planeMesh, texture1, texture2;
-        let isTransitioning = false;
-        const transitionDuration = 1.5;
-        let transitionProgress = 0;
-        function init() {
-            scene = new THREE.Scene();
-            camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
-            renderer = new THREE.WebGLRenderer({ alpha: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(window.devicePixelRatio);
-            document.getElementById('canvas-container').appendChild(renderer.domElement);
-            const textureLoader = new THREE.TextureLoader();
-            texture1 = textureLoader.load(images[0]);
-            texture2 = textureLoader.load(images[1]);
-            const material = new THREE.ShaderMaterial({
-                uniforms: {
-                    texture1: { value: texture1 },
-                    texture2: { value: texture2 },
-                    progress: { value: 0.0 }
-                },
-                vertexShader: `
-                    varying vec2 vUv;
-                    void main() {
-                        vUv = uv;
-                        gl_Position = vec4(position, 1.0);
-                    }
-                `,
-                fragmentShader: `
-                    uniform sampler2D texture1;
-                    uniform sampler2D texture2;
-                    uniform float progress;
-                    varying vec2 vUv;
-                    void main() {
-                        vec4 color1 = texture2D(texture1, vUv);
-                        vec4 color2 = texture2D(texture2, vUv);
-                        gl_FragColor = mix(color1, color2, progress);
-                    }
-                `
-            });
-            const geometry = new THREE.PlaneGeometry(2, 2);
-            planeMesh = new THREE.Mesh(geometry, material);
-            scene.add(planeMesh);
-            window.addEventListener('resize', onWindowResize);
-            animate();
-        }
-        function onWindowResize() {
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        }
-        function startTransition() {
-            if (isTransitioning) return;
-            isTransitioning = true;
-            transitionProgress = 0;
-            const nextIndex = (currentImageIndex + 1) % images.length;
-            const textureLoader = new THREE.TextureLoader();
-            const newTexture = textureLoader.load(images[nextIndex]);
-            planeMesh.material.uniforms.texture2.value = newTexture;
-            clickCount++;
-            if (clickCount >= 2) {
-                setTimeout(() => {
-                    window.location.href = 'image_composition.html';
-                }, 500);
-            }
-        }
-        function animate() {
-            requestAnimationFrame(animate);
-            if (isTransitioning) {
-                transitionProgress += 0.016 / transitionDuration;
-                if (transitionProgress >= 1.0) {
-                    transitionProgress = 1.0;
-                    isTransitioning = false;
-                    currentImageIndex = (currentImageIndex + 1) % images.length;
-                    planeMesh.material.uniforms.texture1.value = planeMesh.material.uniforms.texture2.value;
-                    planeMesh.material.uniforms.progress.value = 0.0;
-                } else {
-                    planeMesh.material.uniforms.progress.value = transitionProgress;
-                }
-            }
-            renderer.render(scene, camera);
-        }
-        document.getElementById('replaceBtn').addEventListener('click', startTransition);
-        init();
-    </script>
+
+<!-- LEFT CHATBOT PANEL -->
+<div id="sidebar">
+    <h2>Fragment Chat</h2>
+
+    <div id="chat"></div>
+
+    <div id="chatInput">
+        <input id="userMessage" type="text" placeholder="Type a fragment...">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+</div>
+
+<!-- RIGHT EDITOR PANEL -->
+<div id="main">
+    <div id="tabs">
+        <div class="tab active" onclick="switchTab('characters')">characters.txt</div>
+        <div class="tab" onclick="switchTab('settings')">settings.txt</div>
+        <div class="tab" onclick="switchTab('lore')">lore.txt</div>
+    </div>
+
+    <div id="editor">
+        <div id="characters" class="file"></div>
+        <div id="settings" class="file" style="display:none;"></div>
+        <div id="lore" class="file" style="display:none;"></div>
+    </div>
+</div>
+
+<!-- ⭐ TEXT KEEPER PANEL ⭐ -->
+<div id="keeperPanel">
+    <div style="margin-bottom: 10px; color: #ccc;">
+        Save this conversation snippet?
+    </div>
+
+    <button onclick="keeperSave()" style="
+        background: #9f7fff;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+        margin-right: 10px;
+    ">Save</button>
+
+    <button onclick="keeperDelete()" style="
+        background: #444;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        color: #ccc;
+    ">Delete</button>
+
+    <div id="keeperFileSelect" style="margin-top: 15px; display: none;">
+        <div style="margin-bottom: 8px; color: #ccc;">Choose a file:</div>
+
+        <button onclick="keeperChoose('characters')" style="
+            background: #4fa3ff;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-right: 10px;
+        ">characters.txt</button>
+
+        <button onclick="keeperChoose('settings')" style="
+            background: #4fa3ff;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-right: 10px;
+        ">settings.txt</button>
+
+        <button onclick="keeperChoose('lore')" style="
+            background: #4fa3ff;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+        ">lore.txt</button>
+    </div>
+</div>
+
+<!-- Load your chatbot logic -->
+<script src="script.js"></script>
+
+<!-- UI logic -->
+<script>
+/* TAB SWITCHING */
+function switchTab(name) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.file').forEach(f => f.style.display = 'none');
+
+    document.querySelector(`.tab[onclick="switchTab('${name}')"]`).classList.add('active');
+    document.getElementById(name).style.display = 'block';
+}
+
+/* CHATBOT UI */
+function sendMessage() {
+    const input = document.getElementById("userMessage");
+    const text = input.value.trim();
+    if (!text) return;
+
+    lastUserMessage = text;
+    addBubble(text, true);
+
+    const response = generateResponse(text);
+    lastBotMessage = response;
+    addBubble(response, false);
+
+    input.value = "";
+
+    if (response.trim().endsWith("?")) {
+        document.getElementById("keeperPanel").style.display = "block";
+    }
+}
+
+function addBubble(text, isUser) {
+    const chat = document.getElementById("chat");
+    const bubble = document.createElement("div");
+    bubble.className = "bubble" + (isUser ? " user" : "");
+    bubble.textContent = text;
+    chat.appendChild(bubble);
+    chat.scrollTop = chat.scrollHeight;
+}
+
+</script>
+
 </body>
 </html>
