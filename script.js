@@ -73,36 +73,54 @@ function clusterKeywords(keywords) {
     const clusters = {};
 
     keywords.forEach(word => {
-        const firstLetter = word[0];
-        if (!clusters[firstLetter]) clusters[firstLetter] = [];
-        clusters[firstLetter].push(word);
+        let found = false;
+
+        for (const group in semanticGroups) {
+            if (semanticGroups[group].includes(word)) {
+                if (!clusters[group]) clusters[group] = [];
+                clusters[group].push(word);
+                found = true;
+                break;
+            }
+        }
+
+        // If no semantic group found, put it in "misc"
+        if (!found) {
+            if (!clusters.misc) clusters.misc = [];
+            clusters.misc.push(word);
+        }
     });
 
     return clusters;
 }
 
-function findMainCluster(clusters) {
-    let biggest = null;
-    let size = 0;
 
-    for (const key in clusters) {
-        if (clusters[key].length > size) {
-            size = clusters[key].length;
-            biggest = clusters[key];
+function findMainCluster(clusters) {
+    let biggestGroup = "misc";
+    let biggestSize = 0;
+
+    for (const group in clusters) {
+        if (clusters[group].length > biggestSize) {
+            biggestSize = clusters[group].length;
+            biggestGroup = group;
         }
     }
 
-    return biggest;
+    return {
+        name: biggestGroup,
+        words: clusters[biggestGroup]
+    };
 }
+
 
 function formatMindMap(userMsg, botMsg) {
     const allText = userMsg + " " + botMsg;
 
     const keywords = extractKeywords(allText);
     const clusters = clusterKeywords(keywords);
-    const mainCluster = findMainCluster(clusters);
+    const main = findMainCluster(clusters);
 
-    const title = mainCluster[0].toUpperCase() + " — IDEA SNAPSHOT";
+    const title = main.name.toUpperCase() + " — IDEA SNAPSHOT";
 
     let bullets = "";
     keywords.forEach(k => {
@@ -117,3 +135,14 @@ function formatMindMap(userMsg, botMsg) {
     );
 }
 
+
+/* ⭐ SEMANTIC CLUSTERING ⭐ */
+
+const semanticGroups = {
+    environment: ["tundra", "winter", "cold", "snow", "ice", "climate", "forest", "desert", "mountain"],
+    history: ["ancient", "old", "past", "event", "change", "era", "age", "ruins"],
+    magic: ["magic", "spell", "energy", "power", "mystic", "arcane", "crystal"],
+    culture: ["tribe", "people", "ritual", "belief", "custom", "tradition"],
+    conflict: ["war", "battle", "fight", "enemy", "danger", "threat"],
+    emotion: ["fear", "hope", "love", "anger", "sad", "joy"]
+};
