@@ -62,12 +62,15 @@ function keeperChoose(fileName) {
 
 function extractKeywords(text) {
     const ignore = ["the", "and", "a", "an", "is", "are", "was", "were", "to", "of", "in", "on", "with", "for", "that"];
+
     return text
         .toLowerCase()
-        .replace(/[^a-z0-9 ]/g, "")
-        .split(" ")
+        .normalize("NFKD")               // fixes smart punctuation
+        .replace(/[^\w\s]/g, " ")        // replaces punctuation with spaces
+        .split(/\s+/)                    // splits on ANY whitespace
         .filter(word => word.length > 2 && !ignore.includes(word));
 }
+
 
 /* ⭐ SEMANTIC CLUSTERING ⭐ */
 
