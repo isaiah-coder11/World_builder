@@ -69,6 +69,17 @@ function extractKeywords(text) {
         .filter(word => word.length > 2 && !ignore.includes(word));
 }
 
+/* ⭐ SEMANTIC CLUSTERING ⭐ */
+
+const semanticGroups = {
+    environment: ["tundra", "winter", "cold", "snow", "ice", "climate", "forest", "desert", "mountain"],
+    history: ["ancient", "old", "past", "event", "change", "era", "age", "ruins"],
+    magic: ["magic", "spell", "energy", "power", "mystic", "arcane", "crystal"],
+    culture: ["tribe", "people", "ritual", "belief", "custom", "tradition"],
+    conflict: ["war", "battle", "fight", "enemy", "danger", "threat"],
+    emotion: ["fear", "hope", "love", "anger", "sad", "joy"]
+};
+
 function clusterKeywords(keywords) {
     const clusters = {};
 
@@ -134,15 +145,3 @@ function formatMindMap(userMsg, botMsg) {
         "=========================\n\n"
     );
 }
-
-
-/* ⭐ SEMANTIC CLUSTERING ⭐ */
-
-const semanticGroups = {
-    environment: ["tundra", "winter", "cold", "snow", "ice", "climate", "forest", "desert", "mountain"],
-    history: ["ancient", "old", "past", "event", "change", "era", "age", "ruins"],
-    magic: ["magic", "spell", "energy", "power", "mystic", "arcane", "crystal"],
-    culture: ["tribe", "people", "ritual", "belief", "custom", "tradition"],
-    conflict: ["war", "battle", "fight", "enemy", "danger", "threat"],
-    emotion: ["fear", "hope", "love", "anger", "sad", "joy"]
-};
