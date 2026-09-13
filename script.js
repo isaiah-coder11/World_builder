@@ -190,6 +190,19 @@ for (const group in semanticGroups) {
         w.toLowerCase().normalize("NFKD")
     );
 }
+function extractKeywords(text) {
+    const ignore = ["the","and","a","an","is","are","was","were","to","of","in","on","with","for","that"];
+
+    return text
+        .toLowerCase()
+        .normalize("NFKD")
+        .replace(/[^\w\s]/g, " ")
+        .replace(/\s+/g, " ")
+        .split(" ")
+        .map(w => w.trim())
+        .filter(w => w.length > 2 && !ignore.includes(w))
+        .filter((w, i, arr) => arr.indexOf(w) === i);
+}
 
 function clusterKeywords(keywords) {
     const clusters = {};
@@ -216,21 +229,26 @@ function clusterKeywords(keywords) {
 }
 
 function findMainCluster(clusters) {
-    let biggestGroup = "misc";
+    let biggestGroup = null;
     let biggestSize = 0;
 
     for (const group in clusters) {
+        if (group === "misc") continue; // ignore misc unless necessary
+
         if (clusters[group].length > biggestSize) {
             biggestSize = clusters[group].length;
             biggestGroup = group;
         }
     }
 
+    if (!biggestGroup) biggestGroup = "misc";
+
     return {
         name: biggestGroup,
         words: clusters[biggestGroup]
     };
 }
+
 
 
 /* ============================================================
