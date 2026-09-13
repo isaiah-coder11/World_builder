@@ -1,16 +1,54 @@
-/* CHATBOT LOGIC */
+/* ============================================================
+   CHATBOT MEMORY
+   ============================================================ */
+
+let memory = [];
+
+
+/* ============================================================
+   MAIN CHATBOT RESPONSE LOGIC
+   ============================================================ */
+
 function generateResponse(userMessage) {
-    const msg = userMessage.toLowerCase();
+    // store memory
+    memory.push(userMessage);
+    if (memory.length > 20) memory.shift();
 
-    const questionTriggers = ["?", "who", "what", "where", "when", "how", "why"];
-    const isQuestion = questionTriggers.some(trigger => msg.includes(trigger));
+    lastUserMessage = userMessage;
 
-    if (isQuestion) {
-        return guidingAdvice();
+    const msg = userMessage.toLowerCase().trim();
+    const isQ = detectQuestion(msg);
+
+    let botReply;
+
+    if (isQ) {
+        botReply = guidingAdvice();
     } else {
-        return socraticPrompt();
+        botReply = socraticPrompt(userMessage);
     }
+
+    lastBotMessage = botReply;
+    return botReply;
 }
+
+
+/* ============================================================
+   QUESTION DETECTION
+   ============================================================ */
+
+function detectQuestion(msg) {
+    const questionWords = ["who", "what", "where", "when", "why", "how"];
+
+    const endsWithQM = msg.endsWith("?");
+    const startsWithQWord = questionWords.some(w => msg.startsWith(w + " "));
+
+    return endsWithQM || startsWithQWord;
+}
+
+
+/* ============================================================
+   GUIDING ANSWERS (for questions)
+   ============================================================ */
 
 function guidingAdvice() {
     const advice = [
@@ -23,7 +61,20 @@ function guidingAdvice() {
     return advice[Math.floor(Math.random() * advice.length)];
 }
 
-function socraticPrompt() {
+
+/* ============================================================
+   SOCRATIC PROMPTS (for statements)
+   Now keyword‑aware
+   ============================================================ */
+
+function socraticPrompt(userMessage) {
+    const keywords = extractKeywords(userMessage);
+
+    if (keywords.length > 0) {
+        const key = keywords[Math.floor(Math.random() * keywords.length)];
+        return `What deeper meaning might **${key}** hold for the people in your world?`;
+    }
+
     const prompts = [
         "What deeper meaning might this element hold for the people who live in your world?",
         "How does this detail influence the relationships between different groups or cultures?",
@@ -34,11 +85,14 @@ function socraticPrompt() {
     return prompts[Math.floor(Math.random() * prompts.length)];
 }
 
-/* ⭐ KEEPER VARIABLES ⭐ */
+
+/* ============================================================
+   KEEPER SYSTEM
+   ============================================================ */
+
 let lastUserMessage = "";
 let lastBotMessage = "";
 
-/* ⭐ KEEPER FUNCTIONS ⭐ */
 function keeperSave() {
     document.getElementById("keeperFileSelect").style.display = "block";
 }
@@ -50,15 +104,15 @@ function keeperDelete() {
 
 function keeperChoose(fileName) {
     const fileDiv = document.getElementById(fileName);
-
     const snippet = formatMindMap(lastUserMessage, lastBotMessage);
-
     fileDiv.textContent += snippet;
-
     keeperDelete();
 }
 
-/* ⭐ KEYWORD + CLUSTER SYSTEM ⭐ */
+
+/* ============================================================
+   KEYWORD EXTRACTION
+   ============================================================ */
 
 function extractKeywords(text) {
     const ignore = ["the", "and", "a", "an", "is", "are", "was", "were", "to", "of", "in", "on", "with", "for", "that"];
@@ -66,17 +120,17 @@ function extractKeywords(text) {
     return text
         .toLowerCase()
         .normalize("NFKD")
-        .replace(/[\u0000-\u001F\u007F-\u009F\u200B-\u200F\u202A-\u202E\uFEFF]/g, "") // remove ALL invisible chars
-        .replace(/[^\w\s]/g, " ")               // punctuation → space
-        .split(/\s+/)                           // split on any whitespace
+        .replace(/[\u0000-\u001F\u007F-\u009F\u200B-\u200F\u202A-\u202E\uFEFF]/g, "")
+        .replace(/[^\w\s]/g, " ")
+        .split(/\s+/)
         .map(w => w.trim())
         .filter(w => w.length > 2 && !ignore.includes(w));
 }
 
 
-
-
-/* ⭐ SEMANTIC CLUSTERING ⭐ */
+/* ============================================================
+   SEMANTIC CLUSTERING
+   ============================================================ */
 
 const semanticGroups = {
     environment: ["tundra", "winter", "cold", "snow", "ice", "climate", "forest", "desert", "mountain"],
@@ -86,7 +140,7 @@ const semanticGroups = {
     conflict: ["war", "battle", "fight", "enemy", "danger", "threat"],
     emotion: ["fear", "hope", "love", "anger", "sad", "joy"]
 };
-// Normalize dictionary words so they match normalized extracted keywords
+
 for (const group in semanticGroups) {
     semanticGroups[group] = semanticGroups[group].map(w =>
         w.toLowerCase().normalize("NFKD")
@@ -108,7 +162,6 @@ function clusterKeywords(keywords) {
             }
         }
 
-        // If no semantic group found, put it in "misc"
         if (!found) {
             if (!clusters.misc) clusters.misc = [];
             clusters.misc.push(word);
@@ -117,7 +170,6 @@ function clusterKeywords(keywords) {
 
     return clusters;
 }
-
 
 function findMainCluster(clusters) {
     let biggestGroup = "misc";
@@ -137,11 +189,14 @@ function findMainCluster(clusters) {
 }
 
 
+/* ============================================================
+   MIND MAP FORMATTER
+   ============================================================ */
+
 function formatMindMap(userMsg, botMsg) {
     const allText = userMsg + " " + botMsg;
 
     const keywords = extractKeywords(allText);
-    keywords.forEach(k => console.log("WORD:", k, "CODES:", [...k].map(c => c.charCodeAt(0))));
     const clusters = clusterKeywords(keywords);
     const main = findMainCluster(clusters);
 
@@ -153,9 +208,10 @@ function formatMindMap(userMsg, botMsg) {
     });
 
     return (
-        "=========================\n" +
-        title + "\n\n" +
+        "╔════════════════════════════════╗\n" +
+        `║   ${title}\n` +
+        "╚════════════════════════════════╝\n\n" +
         bullets +
-        "=========================\n\n"
+        "---------------------------------\n\n"
     );
 }
