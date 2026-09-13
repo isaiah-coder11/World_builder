@@ -4,13 +4,47 @@
 
 let memory = [];
 
+/* ============================================================
+   CATEGORY KEYWORDS
+   ============================================================ */
+
+const characterKeywords = [
+  "he","she","they","him","her","them","his","hers","their","theirs",
+  "hero","villain","mentor","friend","enemy","leader","follower",
+  "warrior","mage","thief","ruler","king","queen","prince","princess",
+  "soldier","guardian","hunter","wanderer","outsider","stranger",
+  "chosen","orphan","trickster","sage","champion","rebel","visionary",
+  "survivor","healer","scholar","artist","inventor","explorer",
+  "brave","fearful","kind","cruel","loyal","selfish","curious","angry",
+  "calm","shy","bold","clever","wise","naive","stubborn","gentle",
+  "ambitious","cautious","reckless","patient","impatient",
+  "motivation","goal","fear","flaw","strength","weakness","backstory",
+  "growth","change","conflict","belief","dream","destiny","choice",
+  "challenge","struggle","journey","transformation",
+  "family","brother","sister","mother","father","friendship","rival",
+  "partner","team","group","clan","tribe","bond","connection"
+];
+
+const settingKeywords = [
+  "forest","desert","mountain","valley","river","lake","ocean","island",
+  "coast","canyon","swamp","tundra","plains","jungle","hill","cliff",
+  "city","village","town","castle","fort","temple","tower","market",
+  "harbor","bridge","road","ruins","palace","camp","farm","port",
+  "tradition","festival","custom","language","clothing","food","music",
+  "religion","beliefs","ritual","holiday","society","community","trade",
+  "rain","storm","snow","wind","fog","heat","cold","season","sunset",
+  "sunrise","night","day","drought","flood","cloud","sky",
+  "dark","bright","quiet","busy","crowded","empty","peaceful","chaotic",
+  "ancient","modern","rural","urban","isolated","remote","wild",
+  "cave","mine","field","meadow","savanna","glacier","volcano",
+  "reef","shore","bay","delta","grove","path","trail"
+];
 
 /* ============================================================
    MAIN CHATBOT RESPONSE LOGIC
    ============================================================ */
 
 function generateResponse(userMessage) {
-    // store memory
     memory.push(userMessage);
     if (memory.length > 20) memory.shift();
 
@@ -31,23 +65,17 @@ function generateResponse(userMessage) {
     return botReply;
 }
 
-
 /* ============================================================
    QUESTION DETECTION
    ============================================================ */
 
 function detectQuestion(msg) {
     const questionWords = ["who", "what", "where", "when", "why", "how"];
-
-    const endsWithQM = msg.endsWith("?");
-    const startsWithQWord = questionWords.some(w => msg.startsWith(w + " "));
-
-    return endsWithQM || startsWithQWord;
+    return msg.endsWith("?") || questionWords.some(w => msg.startsWith(w + " "));
 }
 
-
 /* ============================================================
-   GUIDING ANSWERS (for questions)
+   GUIDING ANSWERS
    ============================================================ */
 
 function guidingAdvice() {
@@ -61,10 +89,8 @@ function guidingAdvice() {
     return advice[Math.floor(Math.random() * advice.length)];
 }
 
-
 /* ============================================================
-   SOCRATIC PROMPTS (for statements)
-   Now keyword‑aware
+   SOCRATIC PROMPTS
    ============================================================ */
 
 function socraticPrompt(userMessage) {
@@ -84,7 +110,6 @@ function socraticPrompt(userMessage) {
     ];
     return prompts[Math.floor(Math.random() * prompts.length)];
 }
-
 
 /* ============================================================
    KEEPER SYSTEM
@@ -109,36 +134,35 @@ function keeperChoose(fileName) {
     keeperDelete();
 }
 
-
 /* ============================================================
-   KEYWORD EXTRACTION
+   KEYWORD EXTRACTION — FIXED
    ============================================================ */
 
 function extractKeywords(text) {
-    const ignore = ["the", "and", "a", "an", "is", "are", "was", "were", "to", "of", "in", "on", "with", "for", "that"];
+    const ignore = ["the","and","a","an","is","are","was","were","to","of","in","on","with","for","that"];
 
     return text
         .toLowerCase()
         .normalize("NFKD")
-        .replace(/[\u0000-\u001F\u007F-\u009F\u200B-\u200F\u202A-\u202E\uFEFF]/g, "")
-        .replace(/[^\w\s]/g, " ")
-        .split(/\s+/)
+        .replace(/[^\w\s]/g, " ")   // remove punctuation
+        .replace(/\s+/g, " ")       // collapse spaces
+        .split(" ")
         .map(w => w.trim())
-        .filter(w => w.length > 2 && !ignore.includes(w));
+        .filter(w => w.length > 2 && !ignore.includes(w))
+        .filter((w, i, arr) => arr.indexOf(w) === i); // remove duplicates
 }
 
-
 /* ============================================================
-   SEMANTIC CLUSTERING
+   SEMANTIC GROUPS
    ============================================================ */
 
 const semanticGroups = {
-    environment: ["tundra", "winter", "cold", "snow", "ice", "climate", "forest", "desert", "mountain"],
-    history: ["ancient", "old", "past", "event", "change", "era", "age", "ruins"],
-    magic: ["magic", "spell", "energy", "power", "mystic", "arcane", "crystal"],
-    culture: ["tribe", "people", "ritual", "belief", "custom", "tradition"],
-    conflict: ["war", "battle", "fight", "enemy", "danger", "threat"],
-    emotion: ["fear", "hope", "love", "anger", "sad", "joy"]
+    environment: ["tundra","winter","cold","snow","ice","climate","forest","desert","mountain"],
+    history: ["ancient","old","past","event","change","era","age","ruins"],
+    magic: ["magic","spell","energy","power","mystic","arcane","crystal"],
+    culture: ["tribe","people","ritual","belief","custom","tradition"],
+    conflict: ["war","battle","fight","enemy","danger","threat"],
+    emotion: ["fear","hope","love","anger","sad","joy"]
 };
 
 for (const group in semanticGroups) {
@@ -146,6 +170,10 @@ for (const group in semanticGroups) {
         w.toLowerCase().normalize("NFKD")
     );
 }
+
+/* ============================================================
+   CLUSTERING — FIXED
+   ============================================================ */
 
 function clusterKeywords(keywords) {
     const clusters = {};
@@ -171,23 +199,30 @@ function clusterKeywords(keywords) {
     return clusters;
 }
 
+/* ============================================================
+   MAIN CLUSTER SELECTION — FIXED
+   ============================================================ */
+
 function findMainCluster(clusters) {
-    let biggestGroup = "misc";
+    let biggestGroup = null;
     let biggestSize = 0;
 
     for (const group in clusters) {
+        if (group === "misc") continue; // ignore misc unless necessary
+
         if (clusters[group].length > biggestSize) {
             biggestSize = clusters[group].length;
             biggestGroup = group;
         }
     }
 
+    if (!biggestGroup) biggestGroup = "misc";
+
     return {
         name: biggestGroup,
         words: clusters[biggestGroup]
     };
 }
-
 
 /* ============================================================
    MIND MAP FORMATTER
@@ -211,7 +246,3 @@ function formatMindMap(userMsg, botMsg) {
         "╔════════════════════════════════╗\n" +
         `║   ${title}\n` +
         "╚════════════════════════════════╝\n\n" +
-        bullets +
-        "---------------------------------\n\n"
-    );
-}
