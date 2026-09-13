@@ -151,3 +151,5 @@ function formatMindMap(userMsg, botMsg) {
         "=========================\n\n"
     );
 }
+
+console.log("WORD:", JSON.stringify(word));
