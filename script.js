@@ -297,10 +297,11 @@ function formatMindMap(userMsg, botMsg) {
 
     const title = main.name.toUpperCase() + " — IDEA SNAPSHOT";
 
-    let bullets = "";
-    keywords.forEach(k => {
-        bullets += "• " + k + "\n";
-    });
+   let bullets = "";
+main.words.forEach(line => {
+    bullets += "• " + line + "\n";
+});
+
 
     return (
         "╔════════════════════════════════╗\n" +
