@@ -39,6 +39,45 @@ const settingKeywords = [
   "reef","shore","bay","delta","grove","path","trail"
 ];
 
+const categoryPrompts = {
+    environment: [
+        "How does this environment shape the people who live there?",
+        "What hidden dangers or wonders exist in this landscape?",
+        "How has the climate influenced local culture or survival?",
+        "What stories or myths are tied to this place?"
+    ],
+    character: [
+        "What drives this character forward despite their challenges?",
+        "How do their relationships shape their destiny?",
+        "What flaw or strength defines them the most?",
+        "How has their past shaped who they are now?"
+    ],
+    history: [
+        "What ancient event still echoes through the present?",
+        "Who recorded this history, and who tried to erase it?",
+        "What relics or ruins remain from this era?",
+        "How do different cultures interpret this historical moment?"
+    ],
+    culture: [
+        "What traditions define this society?",
+        "How do beliefs shape daily life here?",
+        "What conflicts arise between different cultural groups?",
+        "What rituals mark important life events?"
+    ],
+    conflict: [
+        "What sparked this conflict originally?",
+        "Who benefits from the fighting, and who suffers?",
+        "How might this struggle reshape the world?",
+        "What alliances or betrayals define this war?"
+    ],
+    misc: [
+        "What deeper meaning might this idea hold?",
+        "How could this concept evolve over time?",
+        "What consequences might arise from this detail?",
+        "Who is most affected by this idea?"
+    ]
+};
+
 
 /* ============================================================
    MAIN CHATBOT RESPONSE LOGIC
@@ -104,21 +143,16 @@ function guidingAdvice() {
 
 function socraticPrompt(userMessage) {
     const keywords = extractKeywords(userMessage);
+    const clusters = clusterKeywords(keywords);
+    const main = findMainCluster(clusters);
 
-    if (keywords.length > 0) {
-        const key = keywords[Math.floor(Math.random() * keywords.length)];
-        return `What deeper meaning might **${key}** hold for the people in your world?`;
-    }
+    const group = main.name; // environment, character, history, etc.
 
-    const prompts = [
-        "What deeper meaning might this element hold for the people who live in your world?",
-        "How does this detail influence the relationships between different groups or cultures?",
-        "What assumptions are you making about this part of your world, and what happens if you challenge them?",
-        "How would this concept evolve over centuries of change?",
-        "What hidden consequences might arise from this idea?"
-    ];
+    const prompts = categoryPrompts[group] || categoryPrompts.misc;
+
     return prompts[Math.floor(Math.random() * prompts.length)];
 }
+
 
 
 /* ============================================================
