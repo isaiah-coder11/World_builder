@@ -249,35 +249,75 @@ function keeperChoose(fileName) {
 function expandKeyword(keyword, group) {
     const templates = {
         environment: [
-            `A ${keyword} landscape with harsh conditions`,
-            `An environment defined by ${keyword} elements`,
-            `A setting shaped by ${keyword} terrain`
+            `A ${keyword} landscape shaped by extreme conditions`,
+            `A region where ${keyword} defines daily survival`,
+            `A terrain molded by centuries of ${keyword}`,
+            `A place where ${keyword} influences every living creature`,
+            `A harsh environment dominated by ${keyword} forces`,
+            `A remote area known for its intense ${keyword}`,
+            `A world where ${keyword} creates unique challenges`,
+            `A land whose identity is rooted in ${keyword}`,
+            `A climate shaped by persistent ${keyword} patterns`,
+            `A wilderness where ${keyword} determines the rhythm of life`
         ],
+
         character: [
-            `A character influenced by ${keyword}`,
-            `Someone defined by their ${keyword}`,
-            `A personality shaped by ${keyword}`
+            `A character whose identity is shaped by ${keyword}`,
+            `Someone defined by their deep connection to ${keyword}`,
+            `A personality molded through experiences with ${keyword}`,
+            `An individual whose greatest challenge involves ${keyword}`,
+            `A person whose worldview is influenced by ${keyword}`,
+            `A character who draws strength from ${keyword}`,
+            `Someone whose past is marked by ${keyword}`,
+            `A figure whose destiny is tied to ${keyword}`,
+            `A character who fears the consequences of ${keyword}`,
+            `An individual whose relationships revolve around ${keyword}`
         ],
+
         magic: [
-            `A magical concept rooted in ${keyword}`,
-            `An arcane idea tied to ${keyword}`,
-            `A mystical force connected to ${keyword}`
+            `A magical force rooted in ${keyword}`,
+            `An arcane phenomenon shaped by ${keyword}`,
+            `A mystical energy connected to ${keyword}`,
+            `A spellcraft tradition centered around ${keyword}`,
+            `A supernatural effect triggered by ${keyword}`,
+            `An enchanted power fueled by ${keyword}`,
+            `A magical discipline that studies ${keyword}`,
+            `A ritual that channels ${keyword} energies`,
+            `A sorcery style influenced by ${keyword}`,
+            `A mythic source of magic tied to ${keyword}`
         ],
+
         conflict: [
             `A conflict driven by ${keyword}`,
             `A struggle centered around ${keyword}`,
-            `A tension caused by ${keyword}`
+            `A tension caused by ${keyword}`,
+            `A long‑standing feud rooted in ${keyword}`,
+            `A dangerous escalation sparked by ${keyword}`,
+            `A rivalry intensified by ${keyword}`,
+            `A battle fought over control of ${keyword}`,
+            `A dispute fueled by differing views on ${keyword}`,
+            `A crisis emerging from ${keyword}`,
+            `A war whose origins trace back to ${keyword}`
         ],
+
         misc: [
             `A general idea involving ${keyword}`,
             `A concept loosely tied to ${keyword}`,
-            `An undefined thought about ${keyword}`
+            `An undefined thought about ${keyword}`,
+            `A theme subtly influenced by ${keyword}`,
+            `An abstract notion connected to ${keyword}`,
+            `A creative spark inspired by ${keyword}`,
+            `A symbolic idea represented through ${keyword}`,
+            `A possibility emerging from ${keyword}`,
+            `A detail that hints at ${keyword}`,
+            `An element that adds nuance through ${keyword}`
         ]
     };
 
     const options = templates[group] || templates.misc;
     return options[Math.floor(Math.random() * options.length)];
 }
+
 
 
 /* ============================================================
