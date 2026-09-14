@@ -144,6 +144,39 @@ function keeperChoose(fileName) {
     keeperDelete();
 }
 
+function expandKeyword(keyword, group) {
+    const templates = {
+        environment: [
+            `A ${keyword} landscape with harsh conditions`,
+            `An environment defined by ${keyword} elements`,
+            `A setting shaped by ${keyword} terrain`
+        ],
+        character: [
+            `A character influenced by ${keyword}`,
+            `Someone defined by their ${keyword}`,
+            `A personality shaped by ${keyword}`
+        ],
+        magic: [
+            `A magical concept rooted in ${keyword}`,
+            `An arcane idea tied to ${keyword}`,
+            `A mystical force connected to ${keyword}`
+        ],
+        conflict: [
+            `A conflict driven by ${keyword}`,
+            `A struggle centered around ${keyword}`,
+            `A tension caused by ${keyword}`
+        ],
+        misc: [
+            `A general idea involving ${keyword}`,
+            `A concept loosely tied to ${keyword}`,
+            `An undefined thought about ${keyword}`
+        ]
+    };
+
+    const options = templates[group] || templates.misc;
+    return options[Math.floor(Math.random() * options.length)];
+}
+
 
 /* ============================================================
    KEYWORD EXTRACTION
@@ -213,7 +246,7 @@ function clusterKeywords(keywords) {
         for (const group in semanticGroups) {
             if (semanticGroups[group].includes(word)) {
                 if (!clusters[group]) clusters[group] = [];
-                clusters[group].push(word);
+                clusters[group].push(expandKeyword(word, group));
                 found = true;
                 break;
             }
