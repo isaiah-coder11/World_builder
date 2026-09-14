@@ -394,10 +394,11 @@ function clusterKeywords(keywords) {
             }
         }
 
-        if (found===false) {
-            if (!clusters.misc) clusters.misc = [];
-            clusters.misc.push(word);
-        }
+       if (found === false) {
+    if (!clusters.misc) clusters.misc = [];
+    clusters.misc.push(expandKeyword(word, "misc"));
+}
+
     });
 
     return clusters;
