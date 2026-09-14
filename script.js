@@ -41,41 +41,109 @@ const settingKeywords = [
 
 const categoryPrompts = {
     environment: [
-        "How does this environment shape the people who live there?",
-        "What hidden dangers or wonders exist in this landscape?",
-        "How has the climate influenced local culture or survival?",
-        "What stories or myths are tied to this place?"
-    ],
+    "How does this environment shape the people who live there?",
+    "What hidden dangers or wonders exist in this landscape?",
+    "How has the climate influenced local culture or survival?",
+    "What stories or myths are tied to this place?",
+    "How do travelers prepare before entering this region?",
+    "What rare resources or materials can only be found here?",
+    "How do animals and creatures adapt to this environment?",
+    "What seasonal changes dramatically affect life here?",
+    "What ancient events shaped the land into what it is now?",
+    "How do different cultures describe this environment in their legends?",
+    "What emotions does this landscape evoke in those who see it?",
+    "What secrets might be buried beneath this terrain?",
+    "How does the weather challenge or empower the people living here?",
+    "What unique architectural styles developed because of this climate?",
+    "How do explorers or wanderers view this region differently from locals?"
+]
     character: [
-        "What drives this character forward despite their challenges?",
-        "How do their relationships shape their destiny?",
-        "What flaw or strength defines them the most?",
-        "How has their past shaped who they are now?"
-    ],
+    "What drives this character forward despite their challenges?",
+    "How do their relationships shape their destiny?",
+    "What flaw or strength defines them the most?",
+    "How has their past shaped who they are now?",
+    "What secret does this character carry that few people know?",
+    "How does this character react when their beliefs are challenged?",
+    "What personal goal motivates their actions in the story?",
+    "How do their fears influence the choices they make?",
+    "What event in their childhood shaped their worldview?",
+    "How do they change when placed under extreme pressure?",
+    "What moral line would this character never cross?",
+    "How do others perceive this character differently than they perceive themselves?",
+    "What hidden talent or skill does this character rely on?",
+    "How does this character handle betrayal or broken trust?",
+    "What future does this character dream of, even if they never admit it?"
+]
     history: [
-        "What ancient event still echoes through the present?",
-        "Who recorded this history, and who tried to erase it?",
-        "What relics or ruins remain from this era?",
-        "How do different cultures interpret this historical moment?"
-    ],
+    "What ancient event still echoes through the present?",
+    "Who recorded this history, and who tried to erase it?",
+    "What relics or ruins remain from this era?",
+    "How do different cultures interpret this historical moment?",
+    "What forgotten civilization once thrived here, and what caused its fall?",
+    "How did a past war or disaster reshape the world as it is now?",
+    "What legendary figure from history still influences modern beliefs?",
+    "How do historians disagree about what truly happened in this era?",
+    "What secrets lie hidden in old manuscripts, carvings, or artifacts?",
+    "How did trade, migration, or exploration shape this region’s past?",
+    "What myth or story from this era is actually based on a real event?",
+    "How did ancient technology or magic differ from modern practices?",
+    "What cultural golden age left behind lasting traditions or inventions?",
+    "How do modern people misunderstand or romanticize this historical period?",
+    "What long‑buried truth is waiting to be rediscovered?"
+]
     culture: [
-        "What traditions define this society?",
-        "How do beliefs shape daily life here?",
-        "What conflicts arise between different cultural groups?",
-        "What rituals mark important life events?"
-    ],
+    "What traditions define this society?",
+    "How do beliefs shape daily life here?",
+    "What conflicts arise between different cultural groups?",
+    "What rituals mark important life events?",
+    "How do people celebrate seasonal changes or major holidays?",
+    "What symbols or icons hold deep meaning within this culture?",
+    "How do elders pass knowledge and stories to younger generations?",
+    "What foods, music, or clothing are unique to this society?",
+    "How do outsiders view this culture differently from those within it?",
+    "What taboos or forbidden practices shape social behavior?",
+    "How do art and craftsmanship reflect the values of this people?",
+    "What role does religion or spirituality play in everyday life?",
+    "How do social classes or roles influence interactions between people?",
+    "What cultural heroes or legends inspire the population?",
+    "How does this culture adapt when faced with change or outside influence?"
+]
     conflict: [
-        "What sparked this conflict originally?",
-        "Who benefits from the fighting, and who suffers?",
-        "How might this struggle reshape the world?",
-        "What alliances or betrayals define this war?"
-    ],
+    "What sparked this conflict originally?",
+    "Who benefits from the fighting, and who suffers?",
+    "How might this struggle reshape the world?",
+    "What alliances or betrayals define this war?",
+    "What long‑standing tension finally erupted into open conflict?",
+    "How do ordinary people survive during this period of unrest?",
+    "What leaders or factions are driving the conflict forward?",
+    "How do different sides justify their actions or beliefs?",
+    "What event could tip the balance and end the struggle?",
+    "How has this conflict changed the landscape, cities, or culture?",
+    "What rumors or propaganda spread during this time?",
+    "How do individuals choose sides, and what pressures influence them?",
+    "What unexpected alliances form when survival becomes more important than loyalty?",
+    "How does the conflict affect trade, travel, or communication between regions?",
+    "What personal stories of courage or loss emerge from this struggle?"
+]
+
     misc: [
-        "What deeper meaning might this idea hold?",
-        "How could this concept evolve over time?",
-        "What consequences might arise from this detail?",
-        "Who is most affected by this idea?"
-    ]
+    "What deeper meaning might this idea hold?",
+    "How could this concept evolve over time?",
+    "What consequences might arise from this detail?",
+    "Who is most affected by this idea?",
+    "How might this idea connect to other parts of the world or story?",
+    "What unexpected possibilities could grow from this concept?",
+    "How might different characters interpret this idea differently?",
+    "What emotions or themes does this idea naturally evoke?",
+    "How could this idea become a turning point in the narrative?",
+    "What hidden truth might be revealed by exploring this idea further?",
+    "How might this idea influence future events or decisions?",
+    "What symbolic meaning could this idea take on within the story?",
+    "How could this idea be misunderstood or misused?",
+    "What questions does this idea raise about the world or its people?",
+    "How might this idea change depending on who discovers it?"
+]
+
 };
 
 
