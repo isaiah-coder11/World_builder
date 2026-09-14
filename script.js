@@ -431,19 +431,16 @@ function findMainCluster(clusters) {
    ============================================================ */
 
 function formatMindMap(userMsg, botMsg) {
-    const allText = userMsg + " " + botMsg;
-
-    const keywords = extractKeywords(allText);
+    const keywords = extractKeywords(userMsg); // <- only userMsg now
     const clusters = clusterKeywords(keywords);
     const main = findMainCluster(clusters);
 
     const title = main.name.toUpperCase() + " — IDEA SNAPSHOT";
 
-   let bullets = "";
-main.words.forEach(line => {
-    bullets += "• " + line + "\n";
-});
-
+    let bullets = "";
+    main.words.forEach(line => {
+        bullets += "• " + line + "\n";
+    });
 
     return (
         "╔════════════════════════════════╗\n" +
@@ -453,3 +450,4 @@ main.words.forEach(line => {
         "---------------------------------\n\n"
     );
 }
+
