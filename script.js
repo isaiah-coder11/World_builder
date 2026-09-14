@@ -56,7 +56,7 @@ const categoryPrompts = {
     "How does the weather challenge or empower the people living here?",
     "What unique architectural styles developed because of this climate?",
     "How do explorers or wanderers view this region differently from locals?"
-]
+],
     character: [
     "What drives this character forward despite their challenges?",
     "How do their relationships shape their destiny?",
@@ -73,7 +73,7 @@ const categoryPrompts = {
     "What hidden talent or skill does this character rely on?",
     "How does this character handle betrayal or broken trust?",
     "What future does this character dream of, even if they never admit it?"
-]
+],
     history: [
     "What ancient event still echoes through the present?",
     "Who recorded this history, and who tried to erase it?",
@@ -90,7 +90,7 @@ const categoryPrompts = {
     "What cultural golden age left behind lasting traditions or inventions?",
     "How do modern people misunderstand or romanticize this historical period?",
     "What long‑buried truth is waiting to be rediscovered?"
-]
+],
     culture: [
     "What traditions define this society?",
     "How do beliefs shape daily life here?",
@@ -107,7 +107,7 @@ const categoryPrompts = {
     "How do social classes or roles influence interactions between people?",
     "What cultural heroes or legends inspire the population?",
     "How does this culture adapt when faced with change or outside influence?"
-]
+],
     conflict: [
     "What sparked this conflict originally?",
     "Who benefits from the fighting, and who suffers?",
@@ -124,7 +124,7 @@ const categoryPrompts = {
     "What unexpected alliances form when survival becomes more important than loyalty?",
     "How does the conflict affect trade, travel, or communication between regions?",
     "What personal stories of courage or loss emerge from this struggle?"
-]
+],
 
     misc: [
     "What deeper meaning might this idea hold?",
